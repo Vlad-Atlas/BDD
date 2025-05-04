@@ -1,39 +1,20 @@
 package ru.netology.web.page;
 
 import com.codeborne.selenide.SelenideElement;
-import ru.netology.web.data.DataHelper;
+import org.openqa.selenium.Keys;
 
-import java.time.Duration;
-
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 public class TransferPage {
 
-    private final SelenideElement amountInput = $("[data-test-id = 'amount'] input");
-    private final SelenideElement fromInput = $("[data-test-id = 'from'] input");
-    private final SelenideElement transferButton = $("[data-test-id = 'action-transfer']");
-    private final SelenideElement transferHead = $(byText("Пополнение карты"));
-    private final SelenideElement errorMessage = $("[data-test-id = 'error-message']");
+    private SelenideElement totField = $(".money-input .input__control");
+    private SelenideElement sourceCardField = $("[data-test-id='from'] .input__control");
+    private SelenideElement addFundsButton = $("[data-test-id='action-transfer'] .button__text");
+    private SelenideElement cancelButton = $("[data-test-id='action-cancel'] .button__text");
 
-    public TransferPage() {
-        transferHead.shouldBe(visible);
-    }
-
-    public DashboardPage makeValidTransfer(String amountToTransfer, DataHelper.CardInfo cardInfo) {
-        makeTransfer(amountToTransfer, cardInfo);
-        return new DashboardPage();
-    }
-
-    public void makeTransfer(String amountToTransfer, DataHelper.CardInfo cardInfo) {
-        amountInput.setValue(amountToTransfer);
-        fromInput.setValue(cardInfo.getCardNumber());
-        transferButton.click();
-    }
-
-    public void findErrorMessage(String expectedText) {
-        errorMessage.shouldHave((text(expectedText)), Duration.ofSeconds(15)).shouldBe(visible);
+    public void transaction(String value, String source) {
+        totField.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE, value.replace(" ", ""));
+        sourceCardField.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE, source.replace(" ", ""));
+        addFundsButton.click();
     }
 }
