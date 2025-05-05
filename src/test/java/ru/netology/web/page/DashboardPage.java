@@ -5,25 +5,33 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import ru.netology.web.data.DataHelper;
 
-import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class DashboardPage {
+    private final SelenideElement heading = $("[data-test-id=dashboard]");
 
     private ElementsCollection cards = $$(".list__item div");
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
-    private SelenideElement heading = $("[data-test-id=dashboard]");
 
     public DashboardPage() {
         heading.shouldBe(visible);
     }
 
+    private SelenideElement getCardInfo(DataHelper.CardInfo cardInfo) {
+        return cards.findBy(Condition.attribute("data-test-id", cardInfo.getTestId()));
+    }
+
     public int getCardBalance(DataHelper.CardInfo cardInfo) {
-        var text = cards.findBy(Condition.text(cardInfo.getCardNumber().substring(15))).getText();
+        var text = getCardInfo(cardInfo).getText();
         return extractBalance(text);
+    }
+
+    public TransferPage selectCard(DataHelper.CardInfo cardInfo) {
+        getCardInfo(cardInfo).$("button").click();
+        return new TransferPage();
     }
 
     private int extractBalance(String text) {
@@ -33,8 +41,23 @@ public class DashboardPage {
         return Integer.parseInt(value);
     }
 
-    public TransferPage selectCardToTransfer(DataHelper.CardInfo cardInfo) {
-        cards.findBy(attribute("data-test-id", cardInfo.getTestID())).$("button").click();
-        return new TransferPage();
+    public int updateCardBalance(DataHelper.CardInfo cardInfo, DataHelper.TransferNumber transferAmount) {
+        int currentBalance = getCardBalance(cardInfo);
+        int newBalance = currentBalance + transferAmount.getAmount();
+        enterTransferAmount(cardInfo, transferAmount.getAmount());
+
+        getCardInfo(cardInfo).shouldHave(Condition.text(String.valueOf(newBalance)));
+
+        refreshUI();
+
+        return newBalance;
+        // Возвращаем новый баланс
     }
+
+    private void enterTransferAmount(DataHelper.CardInfo cardInfo, int amount) {
+    }
+
+    private void refreshUI() {
+    }
+
 }
