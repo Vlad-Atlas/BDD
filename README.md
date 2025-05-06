@@ -1,1 +1,0 @@
-[![Java CI with Gradle](https://github.com/Vlad-Atlas/BDD/actions/workflows/gradle.yml/badge.svg)](https://github.com/Vlad-Atlas/BDD/actions/workflows/gradle.yml)
